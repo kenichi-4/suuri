@@ -1,0 +1,52 @@
+import numpy as np
+from scipy import linalg
+
+
+def newton(x, f, Df, cond):
+    i=0
+    while True:
+        # Newton method
+        DFinv_Fx = linalg.solve(Df(x), f(x))
+        x = x - DFinv_Fx
+        if cond(i, x, DFinv_Fx):
+            break
+        i += 1
+    return x
+
+
+def f(x):
+    # Problem
+    fx = np.zeros((len(x)))
+    fx[0] = 2*x[0]**2 - np.exp(x[1])
+    fx[1] = -3*x[0]*x[1]**2 - x[1]**3 - 3
+    return fx
+
+
+def Df(p):
+    # Jacobi matrix
+    Dfp = np.zeros((len(p), len(p)))
+    Dfp[0][0] = 4*p[0]
+    Dfp[0][1] = -np.exp(p[1])
+    Dfp[1][0] = -3*p[1]**2
+    Dfp[1][1] = -6*p[0]*p[1] - 3*p[1]**2
+    return Dfp
+
+
+def cond(i, x, DFinv_Fx):
+    # Callback function
+    if np.max(np.abs(DFinv_Fx)) <= 10**(-14):
+        return True
+    if i == 100:
+        return True
+    return False
+
+
+# Main:
+x0_list = [[4, 5], [0, -2], [1, -2]]
+
+for x0 in x0_list:
+    x = np.zeros((2))
+    x[0] = x0[0]
+    x[1] = x0[1]
+    x = newton(x, f, Df, cond)
+    print("初期値", x0, "-> 解", x)
