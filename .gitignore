@@ -1,3 +1,6 @@
 __pycache__/
 .DS_Store
 .ipynb_checkpoints/
+
+# 提出用 zip は学籍番号を含むため公開しない
+*.zip
